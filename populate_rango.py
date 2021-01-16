@@ -22,7 +22,7 @@ def populate():
          'url': 'http://www.greenteapress.com/thinkpython/',
          'views': 2435},
         {'title': 'Learn Python in 10 Minutes',
-         'url': 'http://www.korokithakis.net/tutorials/python',
+         'url': 'http://www.korokithakis.net/tutorials/python/',
          'views': 76346}]
 
     django_pages = [
