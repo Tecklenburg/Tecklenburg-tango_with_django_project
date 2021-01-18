@@ -1,15 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Rango</title>
-    </head>
+{% extends 'rango/base.html' %}
+{% load staticfiles %}
 
-    <body>
-        <h1>Add a Page to {{ category.name }}</h1>
+{% block title_block %}
+    Add a Page
+{% endblock %}
+
+{% block body_block %}
+    <h1>Add a Page to {{ category.name }}</h1>
         <div>
-            <form id="add_page_form" method="post" action="/rango/category/{{ category.slug }}/add_page/">
-                <!-- protects the Posting process missing the token might cause problems -->
+            <form id="add_page_form" method="post" action="{% url 'rango:add_page' category.slug %}">
+                <!-- protects the Posting process missing the token might cause problems
+                why here two tokens? -->
                 {% csrf_token %}
                 {% csrf_token %}
                 {% for hidden in form.hidden_fields %}
@@ -23,5 +24,5 @@
                 <input type="submit" name="submit" value="Add Page" />
             </form>
         </div>
-    </body>
-</html>
+{% endblock %}
+
