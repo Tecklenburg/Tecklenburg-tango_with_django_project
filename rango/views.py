@@ -3,8 +3,9 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
 from rango.models import Category, Page
-from rango.forms import CategoryForm, PageForm
-
+from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -57,7 +58,7 @@ def show_category(request, category_name_slug):
     # render the response and return to client
     return render(request, 'rango/category.html', context=context_dict )
 
-
+@login_required()
 def add_category(request):
     form = CategoryForm()
 
@@ -72,7 +73,7 @@ def add_category(request):
             print(form.errors)
     return render(request, 'rango/add_category.html', {'form': form})
 
-
+@login_required()
 def add_page(request, category_name_slug):
     try:
         category = Category.objects.get(slug=category_name_slug)
@@ -102,8 +103,85 @@ def add_page(request, category_name_slug):
     context_dict = {'form': form, 'category': category}
     return render(request, 'rango/add_page.html', context=context_dict)
 
+def register(request):
+    # variable to state success status  of registration
+    registered = False
+
+    # if HTTP POST, then interested in data
+    if request.method == 'POST':
+        # grab information from UserForm and UserProfileForm
+        user_form = UserForm(request.POST)
+        profile_form = UserProfileForm(request.POST)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            # save data from the form
+            user = user_form.save()
+
+            # hash password with the set_password method
+            user.set_password(user.password)
+            user.save()
+
+            # sort out user profile instance do not commit to make changes
+            profile = profile_form.save(commit=False)
+            profile.user = user
+
+            # check for profile picture
+            if 'picture' in request.FILES:
+                profile.picture = request.FILES['picture']
+
+            # save UserProfile
+            profile.save()
+
+            # if reached successful
+            registered = True
+        else:
+            # Invalid form
+            print(user_form.errors, profile_form.errors)
+    else:
+        # not a Post, so render the form
+        user_form = UserForm()
+        profile_form = UserProfileForm()
+
+    # Render the template
+    return render(request, 'rango/register.html', context={'user_form': user_form,
+                                                             'profile_form': profile_form,
+                                                             'registered': registered})
+
+def user_login(request):
+    # if request is Post, try tu pull the important info
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # use django to check if this is a valid user
+        user = authenticate(username=username, password=password)
+
+        if user:
+            if user.is_active:
+                login(request, user)
+                return redirect(reverse('rango:index'))
+            else:
+                # inactive account
+                return HttpResponse("Your Rango account is disabled.")
+        else:
+            # Bad login details
+            print(f"Invalid login details: {username},{password}")
+            return HttpResponse("Invalid login details supplied")
+
+    # If scenario is a get request
+    else:
+        return render(request, 'rango/login.html')
+
+@login_required
+def user_logout(request):
+    # use django buil in logout function and redirect ot index
+    logout(request)
+    return redirect(reverse('rango:index'))
 
 def about(request):
     return render(request, 'rango/about.html')
 
+@login_required
+def restricted(request):
+    return render(request, 'rango/restricted.html')
 
