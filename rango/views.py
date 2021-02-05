@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
-from django.contrib.auth import authenticate, login, logout
+#from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 
@@ -107,7 +107,7 @@ def add_page(request, category_name_slug):
             print(form.errors)
     context_dict = {'form': form, 'category': category}
     return render(request, 'rango/add_page.html', context=context_dict)
-
+'''
 def register(request):
     # variable to state success status  of registration
     registered = False
@@ -151,7 +151,9 @@ def register(request):
     return render(request, 'rango/register.html', context={'user_form': user_form,
                                                              'profile_form': profile_form,
                                                              'registered': registered})
+'''
 
+'''
 def user_login(request):
     # if request is Post, try tu pull the important info
     if request.method == 'POST':
@@ -176,12 +178,15 @@ def user_login(request):
     # If scenario is a get request
     else:
         return render(request, 'rango/login.html')
+'''
 
+'''
 @login_required
 def user_logout(request):
     # use django buil in logout function and redirect ot index
     logout(request)
     return redirect(reverse('rango:index'))
+'''
 
 def about(request):
     context_dict ={}
