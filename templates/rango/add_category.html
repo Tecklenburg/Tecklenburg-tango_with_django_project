@@ -6,8 +6,13 @@
 {% endblock %}
 
 {% block body_block %}
-    <h1>Add a Category</h1>
-        <div>
+    <div class="jumbotron p-4">
+        <div class="container">
+            <h1>Add a Category</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
             <form id="category_form" method="post" action="{% url 'rango:add_category' %}">
                 <!-- protects the Posting process missing the token might cause problems -->
                 {% csrf_token %}
@@ -18,8 +23,14 @@
                     {{ field.errors }}
                     {{ field.help_text }}
                     {{ field }}
+                    <div class="p-2"></div>
                 {% endfor %}
-                <input type="submit" name="submit" value="Create Category" />
+                <br/>
+                    <button class="btn btn-primary" type="submit" name="submit">
+                        Add Category
+                    </button>
+                    <div class="p-5"></div>
             </form>
         </div>
+    </div>
 {% endblock %}

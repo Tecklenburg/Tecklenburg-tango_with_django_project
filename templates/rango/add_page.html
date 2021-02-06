@@ -6,12 +6,16 @@
 {% endblock %}
 
 {% block body_block %}
-    <h1>Add a Page to {{ category.name }}</h1>
-        <div>
+    <div class="jumbotron p-4">
+        <div class="container">
+            <h1>Add a Page to {{ category.name }}</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
             <form id="add_page_form" method="post" action="{% url 'rango:add_page' category.slug %}">
                 <!-- protects the Posting process missing the token might cause problems
                 why here two tokens? -->
-                {% csrf_token %}
                 {% csrf_token %}
                 {% for hidden in form.hidden_fields %}
                     {{ hidden }}
@@ -20,9 +24,15 @@
                     {{ field.errors }}
                     {{ field.help_text }}
                     {{ field }}
+                    <div class="p-2"></div>
                 {% endfor %}
-                <input type="submit" name="submit" value="Add Page" />
+                    <br/>
+                    <button class="btn btn-primary" type="submit" name="submit">
+                        Add Page
+                    </button>
+                    <div class="p-5"></div>
             </form>
         </div>
+    </div>
 {% endblock %}
 
