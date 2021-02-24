@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 REGISTRATION_OPEN = True
 REGISTRATION_AUTO_LOGIN = True
 LOGIN_REDIRECT_URL = "rango:index"
-LOGIN_URL = 'auth_login'
+LOGIN_URL = 'auth_login '
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
