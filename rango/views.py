@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
@@ -235,6 +236,7 @@ def visitor_cookie_handler(request):
     request.session['visits'] = visits
 
 
+'''
 def goto_url(request):
     if request.method == 'GET':
         page_id = request.GET('page_id')
@@ -243,9 +245,12 @@ def goto_url(request):
         except:
             return redirect(reverse('rango:index'))
         selected_page.views = selected_page.views + 1
+        selected_page.last_visit = timezone.now()
         selected_page.save()
         return (selected_page.url)
     return redirect(reverse('rango:index'))
+'''
+
 
 @login_required
 def register_profile(request):
@@ -274,6 +279,7 @@ class AboutView(View):
 
         return render(request, 'rango/about.html', context_dict)
 
+
 class AddCategoryView(View):
     @method_decorator(login_required)
     def get(self, request):
@@ -291,6 +297,7 @@ class AddCategoryView(View):
             print(form.errors)
 
         return render(request, 'rango/add_category.html', {'form': form})
+
 
 class ProfileView(View):
     def get_user_details(self, username):
@@ -323,7 +330,7 @@ class ProfileView(View):
         except TypeError:
             return redirect(reverse('rango:index'))
 
-        form = UserProfileForm(request.POST, request.FILES, instance = user_profile)
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
 
         if form.is_valid():
             form.save(commit=True)
@@ -342,3 +349,62 @@ class ListProfilesView(View):
     def get(self, request):
         profiles = UserProfile.objects.all()
         return render(request, 'rango/list_profiles.html', {'user_profile_list': profiles})
+
+
+class LikeCategoryView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        category_id = request.GET['category_id']
+
+        try:
+            category = Category.objects.get(id=int(category_id))
+        except Category.DoesNotExist:
+            return HttpResponse(-1)
+        except ValueError:
+            return HttpResponse(-1)
+
+        category.likes = category.likes + 1
+        category.save()
+
+        return HttpResponse(category.likes)
+
+
+def get_category_list(max_results=0, starts_with=''):
+    category_list = []
+
+    if starts_with:
+        category_list = Category.objects.filter(name__istartswith=starts_with)
+
+    if max_results > 0:
+        if len(category_list) > max_results:
+            category_list = category_list[:max_results]
+
+    return category_list
+
+
+class CategorySuggestionView(View):
+    def get(self, request):
+        if 'suggestion' in request.GET:
+            suggestion = request.GET['suggestion']
+        else:
+            suggestion = ''
+
+        category_list = get_category_list(max_results=8, starts_with=suggestion)
+
+        if len(category_list) == 0:
+            category_list = Category.objects.order_by('-likes')
+
+        return render(request, 'rango/categories.html', {'categories': category_list})
+
+
+class GotoView(View):
+    def get(self, request):
+        page_id = request.GET.get('page_id')
+        try:
+            selected_page = Page.objects.get(id=page_id)
+        except Page.DoesNotExist:
+            return redirect(reverse('rango:index'))
+        selected_page.views = selected_page.views + 1
+        selected_page.last_visit = timezone.now()
+        selected_page.save()
+        return redirect(selected_page.url)

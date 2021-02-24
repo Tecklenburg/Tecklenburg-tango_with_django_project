@@ -46,7 +46,14 @@ def populate():
 
     cats = {'Python': {'pages': python_pages, 'views': 128, 'likes': 64},
             'Django': {'pages': django_pages, 'views': 64, 'likes': 32},
-            'Other Frameworks': {'pages': other_pages, 'views': 32, 'likes': 16}}
+            'Other Frameworks': {'pages': other_pages, 'views': 32, 'likes': 16},
+            'Pascal': {'pages': [], 'views': 3, 'likes': 1},
+            'Perl': {'pages': [], 'views': 12, 'likes': 8},
+            'PHP': {'pages': [], 'views': 43, 'likes': 32},
+            'Prolog': {'pages': [], 'views': 11, 'likes': 5},
+            'PostScript': {'pages': [], 'views': 9, 'likes': 2},
+            'Programming': {'pages': [], 'views': 54, 'likes': 34},
+            }
 
     # add the data
     for cat, cat_data in cats.items():

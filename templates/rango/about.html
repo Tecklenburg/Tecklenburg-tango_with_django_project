@@ -13,6 +13,20 @@
         Visits: {{ visits }}
 
     </div>
+
+    <button class="btn btn-primary"
+            onclick="alert('You clicked a button, using inline JavaScript.');">
+        Click me - I run on vanilla JavaScript!
+    </button>
+
+    <button class="btn btn-primary" id="about-btn">
+        Click me - I'm using JQuery!
+    </button>
+
+    <p> This is some test for the JQuery example.</p>
+
+    <div id="msg">Hello! I'm a further example for JQuery testing. </div>
+
     <div>
         <img src="{% static 'images/rango.jpg'%}" alt="Picture of Rango" />"
         <img src="{{ MEDIA_URL }}cat.jpg" alt="Picture of a Cat" />
