@@ -27,7 +27,7 @@ SECRET_KEY = 'zg8##(!_4991+^2_4_@cpw2lno33y1@54f##hh53n)*zz27ce&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['RattleSnake25.pythonanywhere.com']
 
 
 # Application definition
