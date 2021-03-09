@@ -1,0 +1,46 @@
+{%  extends 'rango/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Chat
+{% endblock %}
+
+{% block body_block %}
+    <div class="jumbotron p-4">
+        <div class="container">
+            <h1> {{ name }}</h1>
+            <br>
+            <div>
+                You are chatting with:
+                {% for user in users %}
+                    {% if user_id != user.id%}
+                        {{ user.username }},
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-log">
+        <textarea id="chat-window" cols="100" rows="50" readonly="True" style="line-height: 50%";>
+            {% for message in messages %}
+                {% if message.sender == user%}
+                    You: {{ message.content }}
+                {% else %}
+                    {{ message.sender }}: {{ message.content }}
+                {% endif %}
+            {% endfor %}
+        </textarea>
+    </div>
+
+    <br>
+    <input id="chat-message-input" type="text" size="100" value=""><br>
+    <input id="chat-message-submit" class="btn btn-primary" type="button" value="Send"
+           data-user-id="{{ user_id }}"
+           data-chat-id="{{ chat_id }}">
+    <input type="hidden" id="data-chat-id" name="variable" value="{{ chat_id }}" readonly>
+
+{% endblock %}
+{% block further_scripts %}
+    <script src="{% static 'js/rango-chat.js' %}" crossorigin="anonymous"></script>
+{% endblock %}

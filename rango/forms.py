@@ -1,5 +1,5 @@
 from django import forms
-from rango.models import Page, Category, UserProfile
+from rango.models import Page, Category, UserProfile, Chat
 from django.contrib.auth.models import User
 
 
@@ -11,7 +11,7 @@ class CategoryForm(forms.ModelForm):
 
     # using inital=0 and hide the field allows to set the field easily to 0
 
-    # iniline class to provide additional information on the form
+    # inline class to provide additional information on the form
     class Meta:
         # Provide association between ModelForm and a model
         model = Category
@@ -43,6 +43,7 @@ class PageForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
 
@@ -50,7 +51,16 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ('username', 'email', 'password',)
 
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ('website', 'picture',)
+
+
+class ChatForm(forms.ModelForm):
+    name = forms.CharField(max_length=128, help_text="Please enter the name of the Chat.")
+
+    class Meta:
+        model = Chat
+        fields = ('name',)

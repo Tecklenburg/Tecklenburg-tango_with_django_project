@@ -8,8 +8,8 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 
 from rango.bing_search import run_query
-from rango.models import Category, Page, UserProfile
-from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
+from rango.models import Category, Page, UserProfile, Message, Chat
+from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm, ChatForm
 # from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
@@ -551,3 +551,106 @@ class AddPageView(View):
 
         context_dict = {'form': form, 'category': category}
         return render(request, 'rango/add_page.html', context=context_dict)
+
+
+class ChatView(View):
+    def get(self, request, chat_id, user_id):
+        chat = Chat.objects.get(id=int(chat_id))
+        context_dict = {}
+        context_dict['chat_id'] = chat_id
+        context_dict['user_id'] = int(user_id)
+        context_dict['users'] = []
+        for user in chat.users.all():
+            context_dict['users'].append(user.user)
+        context_dict['name'] = chat.name
+        context_dict['messages'] = Message.objects.filter(chat=chat).order_by('date')
+        return render(request, 'rango/chat.html', context=context_dict)
+
+
+class ChatAddMessageView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        user_id = request.GET['user_id']
+        user = User.objects.get(id=user_id)
+        message = request.GET['message']
+        chat_id = request.GET['chat_id']
+        chat = Chat.objects.get(id=chat_id)
+        Message.objects.create(sender=user, content=message, date=timezone.now(), chat=chat)
+        messages = Message.objects.order_by('date')
+        return render(request, 'rango/chat_log.html', {'messages': messages})
+
+
+# combine with ChatAddMessageView
+class MessageCheckView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        latest_client = int(request.GET['latest_message_id'])
+        chat_id = int(request.GET['chat_id'])
+        chat = Chat.objects.get(id=chat_id)
+        latest_server = Message.objects.filter(chat=chat).order_by('-date')[0].id
+
+        if latest_client == latest_server:
+            out = False
+        else:
+            out = latest_server
+        return HttpResponse(out)
+
+
+class ChatUpdateView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        chat_id = int(request.GET['chat_id'])
+        chat = Chat.objects.get(id=chat_id)
+        messages = Message.objects.filter(chat=chat).order_by('date')
+        return render(request, 'rango/chat_log.html', {'messages': messages})
+
+
+class NewChatView(View):
+    @method_decorator(login_required)
+    def get(self, request, user_id):
+        context_dict ={}
+        context_dict['form'] = ChatForm()
+        context_dict['user_id'] = int(user_id)
+        context_dict['user_profile_list'] = UserProfile.objects.all()
+        return render(request, 'rango/new_chat.html', context_dict)
+
+    @method_decorator(login_required)
+    def post(self, request, user_id):
+        user_ids = request.POST.get('users').split(',')
+        user_ids.append(user_id)
+        form = ChatForm(request.POST)
+        if form.is_valid():
+            form.save(commit=True)
+            for u_id in user_ids:
+                user = User.objects.get(id=int(u_id))
+                print(user)
+                user_profile = UserProfile.objects.get(user=user)
+                form.instance.users.add(user_profile)
+            return redirect(reverse('rango:index'))
+        else:
+            print(form.errors)
+        return redirect(reverse('rango:new_chat',
+                                kwargs={'user_id': user_id}))
+
+
+class ChatsView(View):
+    @method_decorator(login_required)
+    def get(self, request, user_id):
+        context_dict = {}
+        user = User.objects.get(id=int(user_id))
+        user_profile = UserProfile.objects.get(user=user)
+        chats = user_profile.chat_set.all()
+
+        chat_collection = []
+        for chat in chats:
+            dict = {}
+            dict['chatid'] = chat.id
+            dict['name'] = chat.name
+            users = []
+            for u in chat.users.all():
+                if u.user.id != int(user_id):
+                    users.append(u.user.username)
+            dict['users'] = users
+            chat_collection.append(dict)
+
+        return render(request, 'rango/chats.html', {'chats': chat_collection, 'user_id': user_id})

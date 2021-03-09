@@ -1,4 +1,13 @@
 $(document).ready(function(){
+
+
+   $('#TEST').click(function() {
+       alert()
+       $("button").click(function(){alert('remove p')});
+       $("p").remove();
+   });
+
+
     $('#like_btn').click(function(){
         var categoryIdVar;
         categoryIdVar = $(this).attr('data-categoryid');
@@ -35,4 +44,23 @@ $(document).ready(function(){
                 clickedButton.hide();
             })
     });
+
+    $('.rango-add-user').click(function(){
+        var clickedButton = $(this);
+        var username = $(this).attr('data-username');
+        var user_id = $(this).attr('data-user-id');
+        document.getElementById('current-members-names').append(", " + username);
+        var curr_ids = document.getElementById('current-members-ids').getAttribute('value');
+        var new_ids = curr_ids + ',' + user_id;
+        document.getElementById('current-members-ids').setAttribute('value', new_ids);
+        clickedButton.hide();
+    });
+
+    $('.rango-open-chat').click(function(){
+        var chat_id = $(this).attr('data-chat-id');
+        var user_id = $(this).attr('data-user-id');
+        $.ajax('/rango/')
+    });
+
+
 });

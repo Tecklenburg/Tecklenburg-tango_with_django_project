@@ -1,0 +1,68 @@
+{%  extends 'rango/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    New Chat
+{% endblock %}
+
+{% block body_block %}
+    <div class="jumbotron p-4">
+        <div class="container">
+            <h1> Create a New Chat</h1>
+            <form id="chat-form"
+                  method="POST"
+                  action="{% url 'rango:new_chat' user_id %}">
+
+                {% csrf_token %}
+                {% for field in form.visible_fields %}
+                    {{ field.errors }}
+                    {{ field.help_text }}
+                    {{ field }}
+                {% endfor %}
+
+                <div id="current-members-names">
+                    Currently in the Chat: You
+                </div>
+
+                <input id="current-members-ids" type="hidden" name="users" value="{{ user_id }}"/>
+
+                <button class="btn btn-primary" type="submit" name="submit">
+                    Create Chat
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {% if user_profile_list %}
+                <div class="panel-body">
+                    <div class="list-group">
+                        {% for list_user in user_profile_list %}
+                            {% if list_user.user.id != user_id %}
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading">
+                                    <img src="{{ MEDIA_URL }}{{ list_user.picture }}"
+                                         width="64"
+                                         height="64"
+                                         alt="Missing Picture"/>
+                                    {{ list_user.user.username }}
+                                    <input class="btn btn-primary rango-add-user"
+                                           type="button"
+                                           value="Add"
+                                           style="float: right; margin: 10px;"
+                                           data-user-id="{{ list_user.user.id }}"
+                                           data-username="{{ list_user.user.username }}">
+                                </h4>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <p>There are no users present on Rango.</p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

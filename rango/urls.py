@@ -22,5 +22,10 @@ urlpatterns = [
     path('suggest/', views.CategorySuggestionView.as_view(), name='suggest'),
     # path('search/', views.search, name='search'),
     path('search_add_page/', views.SearchAddPageView.as_view(), name='search_add_page'),
-
+    path('chat/<chat_id>/<user_id>/', views.ChatView.as_view(), name='chat'),
+    path('chat_add_message/', views.ChatAddMessageView.as_view(), name='chat_add_message'),
+    path('message_check/', views.MessageCheckView.as_view(), name='message_check'),
+    path('chat_update/', views.ChatUpdateView.as_view(), name='chat_update'),
+    path('new_chat/<user_id>/', views.NewChatView.as_view(), name='new_chat'),
+    path('chats/<user_id>/', views.ChatsView.as_view(), name='chats'),
 ]

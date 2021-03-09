@@ -49,3 +49,22 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class Chat(models.Model):
+    users = models.ManyToManyField(UserProfile)
+    name = models.CharField(max_length=128)
+
+    def __str__(self):
+        out = self.name + ' '
+        for user in self.users:
+            out = out + user
+        return out
+
+
+class Message(models.Model):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, default=0)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    content = models.CharField(max_length=1024)
+    date = models.DateTimeField(default=timezone.now())

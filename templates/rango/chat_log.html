@@ -1,0 +1,9 @@
+<textarea id="chat-window" cols="100" rows="50" readonly="True" style="line-height: 50%";>
+    {% for message in messages %}
+        {% if message.sender == user%}
+            You: {{ message.content }}
+        {% else %}
+            {{ message.sender }}: {{ message.content }}
+        {% endif %}
+    {% endfor %}
+</textarea>

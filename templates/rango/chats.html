@@ -1,0 +1,43 @@
+{%  extends 'rango/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Chats
+{% endblock %}
+
+{% block body_block %}
+    <div class="jumbotron p-4">
+        <div class="container">
+            <h1> Chats </h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {% if chats %}
+                <div class="panel-body">
+                    <div class="list-group">
+                        {% for chat in chats %}
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading">
+                                    {{ chat.name }}
+                                    <button class="btn btn-primary">
+                                        <a href="{% url 'rango:chat' chat.chatid user_id %}" style="color: white;">
+                                            Open
+                                        </a>
+                                    </button>
+                                </h4>
+                                Members: You,
+                                {% for user in chat.users %}
+                                    {{ user }},
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <p>You are currently in no Chatgroups</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
