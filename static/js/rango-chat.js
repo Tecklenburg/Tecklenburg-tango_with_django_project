@@ -11,10 +11,10 @@ $(document).ready(function() {
     };
 
     document.querySelector('#chat-message-submit').onclick = function () {
+        var chat_id = document.getElementById('data-chat-id').value;
         var messageInputDom = document.querySelector('#chat-message-input');
         var message = messageInputDom.value;
         var user_id = $(this).attr('data-user-id');
-        var chat_id = $(this).attr('data-chat-id');
         document.getElementById('chat-message-input').value = '';
 
         if (message !== '') {
@@ -45,5 +45,5 @@ $(document).ready(function() {
                     latest_message_id = data;
                 }
             })
-    }, 5000);
+    }, 10000);
 });

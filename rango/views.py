@@ -570,13 +570,23 @@ class ChatView(View):
 class ChatAddMessageView(View):
     @method_decorator(login_required)
     def get(self, request):
+        chat_id = request.GET['chat_id']
+        chat = Chat.objects.get(id=chat_id)
         user_id = request.GET['user_id']
         user = User.objects.get(id=user_id)
         message = request.GET['message']
-        chat_id = request.GET['chat_id']
         chat = Chat.objects.get(id=chat_id)
         Message.objects.create(sender=user, content=message, date=timezone.now(), chat=chat)
-        messages = Message.objects.order_by('date')
+        messages = Message.objects.filter(chat=chat).order_by('date')
+        return render(request, 'rango/chat_log.html', {'messages': messages})
+
+
+class ChatUpdateView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        chat_id = int(request.GET['chat_id'])
+        chat = Chat.objects.get(id=chat_id)
+        messages = Message.objects.filter(chat=chat).order_by('date')
         return render(request, 'rango/chat_log.html', {'messages': messages})
 
 
@@ -594,15 +604,6 @@ class MessageCheckView(View):
         else:
             out = latest_server
         return HttpResponse(out)
-
-
-class ChatUpdateView(View):
-    @method_decorator(login_required)
-    def get(self, request):
-        chat_id = int(request.GET['chat_id'])
-        chat = Chat.objects.get(id=chat_id)
-        messages = Message.objects.filter(chat=chat).order_by('date')
-        return render(request, 'rango/chat_log.html', {'messages': messages})
 
 
 class NewChatView(View):
